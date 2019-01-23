@@ -4,13 +4,19 @@ class Player {
 
 		// params
 		data.char = data.char || 'X';
+		data.moves = [];
 		this.data = data;
 	}
 
 	play(top, left) {
 		let data = this.data;
+		data.moves.push([top, left]);
 		data.game.play(data.char, parseInt(top), parseInt(left));
 		return this;
+	}
+
+	moves() {
+		return this.data.moves;
 	}
 
 	avalableMoves() {
@@ -58,12 +64,9 @@ class Player {
 
 		else{
 			// WIN
-			var t0 = Date.now();
 			let rate = avalable.map((move) => {
 				return movesToWin(this, move, 0);
 			});
-			var t1 = Date.now();
-			console.log((t1-t0)/1000+'s');
 			winIn = Math.min(...rate),
 			move = avalable[rate.indexOf(winIn)];
 

@@ -24,17 +24,23 @@ $(document).ready(() => {
 
 
 	$('.square').click(function() {
-		let move = $(this).attr('cell').split('-');
+		let $this = $(this);
 
-		playerOne.play(...move);
-		render();
+		let xTurn = playerOne.moves().length <= playerTwo.moves().length,
+			empty = !$this.hasClass('x') && !$this.hasClass('o');
 
-		
-		setTimeout(() => {
-			let counter = playerTwo.strategy(playerOne).move;
-			playerTwo.play(...counter);
+		if(xTurn && empty){
+
+			let move = $(this).attr('cell').split('-');
+
+			playerOne.play(...move);
 			render();
-		}, 500);
-		
+
+			setTimeout(() => {
+				let counter = playerTwo.strategy(playerOne).move;
+				playerTwo.play(...counter);
+				render();
+			}, 500);
+		}
 	});
 });
