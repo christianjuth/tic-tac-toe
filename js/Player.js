@@ -27,11 +27,16 @@ class Player {
 	strategy(op) {
 
 		let shortest = Infinity,
-			game = this.data.game;
+			game = this.data.game,
+			storage = {};
 
 		let movesToWin = (player, move, i) => {
 			player = _.cloneDeep(player);
 			let game = player.data.game;
+
+			// lookup past moves
+			if(storage[game.data.grid.join(',')])
+				return storage[game.data.grid.join(',')];
 
 			player.play(...move);
 			let avalable = player.avalableMoves();
@@ -41,12 +46,15 @@ class Player {
 				return Infinity;
 
 			else if(!game.winner() && avalable.length > 0){
-				return avalable.map((move) => {
+				let bestMove = avalable.map((move) => {
 					return movesToWin(player, move, i+1);
 				}).sort()[0];
+				storage[game.data.grid.join(',')] = bestMove;
+				return bestMove;
 			}
 
 			if(i<shortest) shortest = i;
+			storage[game.data.grid.join(',')] = i;
 			return i;
 		};
 
@@ -64,9 +72,12 @@ class Player {
 
 		else{
 			// WIN
+			let start = Date.now();
 			let rate = avalable.map((move) => {
 				return movesToWin(this, move, 0);
 			});
+			let end = Date.now();
+			console.log(end-start);
 			winIn = Math.min(...rate),
 			move = avalable[rate.indexOf(winIn)];
 
