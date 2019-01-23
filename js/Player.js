@@ -42,13 +42,23 @@ class Player {
 			let avalable = player.avalableMoves();
 
 			// prevent extra testing
-			if(i >= game.data.toWin || i >= shortest)
+			if(i >= game.data.toWin || i > shortest)
 				return Infinity;
 
-			else if(!game.winner() && avalable.length > 0){
+			if(!game.winner() && avalable.length > 0){
 				let bestMove = avalable.map((move) => {
 					return movesToWin(player, move, i+1);
-				}).sort()[0];
+				}).sort();
+
+				// prefer moves that setup
+				// two win posible wins
+				if(bestMove.slice(0,2).join(',') === '1,1')
+					bestMove = bestMove[0]-0.5;
+
+				// else return as normal
+				else
+					bestMove = bestMove[0];
+
 				storage[game.data.grid.join(',')] = bestMove;
 				return bestMove;
 			}
@@ -63,33 +73,33 @@ class Player {
 
 
 		// CONTROL CENTER
-		if(avalable.length >= game.data.size**2){
+		let mid = [Math.round(game.data.size/2)][0],
+			midFree = avalable.map(move => move.join('-')).includes(`${mid}-${mid}`);
+		if(avalable.length+1 >= game.data.size**2 && midFree){
 			winIn = Infinity;
-			let mid = [Math.round(game.data.size/2)];
 			move = [mid,mid];
 		}
 
 
+
 		else{
 			// WIN
-			let start = Date.now();
 			let rate = avalable.map((move) => {
 				return movesToWin(this, move, 0);
 			});
-			let end = Date.now();
-			console.log(end-start);
-			winIn = Math.min(...rate),
-			move = avalable[rate.indexOf(winIn)];
-
-
+			winIn = Math.min(...rate);
 
 			// FIGHT OPONENT
-			if(op !== undefined){
-				op = op.strategy();
-				if(op.winIn == 0 && winIn > 0){
-					winIn++;
-					move = op.move;
-				}
+			if(op) op = op.strategy();
+			
+			if(op && op.winIn <= 1 && winIn > 0){
+				winIn++;
+				move = op.move;
+			}
+
+			else{
+				move = avalable[rate.indexOf(winIn)];
+				console.log(move);
 			}
 		}
 

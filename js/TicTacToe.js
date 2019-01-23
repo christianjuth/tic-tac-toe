@@ -27,7 +27,7 @@ class TicTacToe {
 
 		return data.grid.map((arr, i) => {
 			arr = arr.join('|');
-			return i+1 < data.size ? arr.underline : arr;
+			return i+1 < data.size ? arr : arr;
 		}).join('\n');
 	}
 

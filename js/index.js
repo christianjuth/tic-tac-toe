@@ -37,10 +37,11 @@ $(document).ready(() => {
 			render();
 
 			setTimeout(() => {
-				let counter = playerTwo.strategy(playerOne).move;
-				playerTwo.play(...counter);
+				let counter = playerTwo.strategy(playerOne);
+				console.log(counter);
+				playerTwo.play(...counter.move);
 				render();
-			}, 500);
+			}, 0);
 		}
 	});
 });
