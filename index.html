@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Tic Tac Toe</title>
+
+	<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.slim.min.js"></script>
+	<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.17.11/lodash.min.js"></script>
+	<script type="text/javascript" src="./js/Player.js"></script>
+	<script type="text/javascript" src="./js/TicTacToe.js"></script>
+	<script type="text/javascript" src="./js/index.js"></script>
+
+	<style>
+		body{
+			background-color: #27ae60;
+		}
+
+		*,
+		*:before,
+		*:after {
+		  -webkit-box-sizing: border-box;
+		     -moz-box-sizing: border-box;
+		          box-sizing: border-box;
+		}
+
+		.board{
+			background-color: #fff;
+			width: 320px;
+			height: 320px;
+			overflow: hidden;
+			font-size: 0;
+
+		    position: absolute;
+		    top: 49%;
+		    left: 50%;
+		    transform: translate(-50%, -50%);
+		}
+
+		.square{
+			position: relative;
+			height: 100px;
+			width: 100px;
+			margin: 0 10px 10px 0;
+			float: left;
+			background-color: #27ae60;
+		}
+
+		.row .square:last-child {
+			margin-right: 0;
+		}
+
+		.square.o:before{
+		    content: '';
+		    display: block;
+		    position: absolute;
+		    top: 12%;
+		    left: 12%;
+		    height: 78%;
+		    width: 78%;
+		    background: radial-gradient(transparent 53%, #bce9ce 53%);
+		    border-radius: 100%;
+		}
+
+		.square.x:after,
+		.square.x:before{
+		    content: '';
+		    display: block;
+		    position: absolute;
+		    left: 5%;
+		    top: calc(50% - 5px);
+		    height: 11px;
+		    width: 90%;
+		    background: #bce9ce;
+		    transform: rotate(45deg);
+		}
+
+		.square.x:after{
+		    transform: rotate(-45deg);
+		}
+	</style>
+</head>
+<body>
+
+
+	<div class="board">
+		<div class="row">
+			<div class="square" cell="1-1"></div>
+			<div class="square" cell="1-2"></div>
+			<div class="square" cell="1-3"></div>
+		</div>
+		<div class="row">
+			<div class="square" cell="2-1"></div>
+			<div class="square" cell="2-2"></div>
+			<div class="square" cell="2-3"></div>
+		</div>
+		<div class="row">
+			<div class="square" cell="3-1"></div>
+			<div class="square" cell="3-2"></div>
+			<div class="square" cell="3-3"></div>
+		</div>
+	</div>
+
+
+</body>
+</html>
