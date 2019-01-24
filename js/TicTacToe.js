@@ -1,3 +1,6 @@
+
+
+
 class TicTacToe {
 
 	constructor(data = {}) {
@@ -7,7 +10,8 @@ class TicTacToe {
 		data.toWin = data.toWin || 3;
 
 		// state
-		data.grid = Array(data.size).fill().map(() => {
+		data.grid = data.grid || Array(data.size)
+					.fill().map(() => {
 						return Array(data.size).fill(' ').slice(0);
 					});
 

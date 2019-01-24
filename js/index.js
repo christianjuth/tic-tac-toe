@@ -1,4 +1,8 @@
-let game = new TicTacToe({
+
+
+
+
+window.game = new TicTacToe({
 	size: 3,
 	toWin: 3
 });
@@ -37,11 +41,10 @@ $(document).ready(() => {
 			render();
 
 			setTimeout(() => {
-				let counter = playerTwo.strategy(playerOne);
-				console.log(counter);
+				counter = playerTwo.strategy(playerOne),
 				playerTwo.play(...counter.move);
 				render();
-			}, 0);
+			}, 200);
 		}
 	});
 });
