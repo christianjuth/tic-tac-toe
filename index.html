@@ -12,7 +12,9 @@
 
 	<style>
 		body{
-			background-color: #00b894;
+			background: #2193b0;  /* fallback for old browsers */
+			background: -webkit-linear-gradient(to right, #6dd5ed, #2193b0);  /* Chrome 10-25, Safari 5.1-6 */
+			background: linear-gradient(to right, #6dd5ed, #2193b0); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
 		}
 
 		*,
@@ -24,7 +26,6 @@
 		}
 
 		.board{
-			background-color: #fff;
 			width: 320px;
 			height: 320px;
 			overflow: hidden;
@@ -42,8 +43,8 @@
 			width: 100px;
 			margin: 0 10px 10px 0;
 			float: left;
-			background-color: #00b894;
 			cursor: pointer;
+			outline: 5px solid #fff;
 		}
 
 		.row .square:last-child {
@@ -58,7 +59,7 @@
 		    left: 12%;
 		    height: 78%;
 		    width: 78%;
-		    background: radial-gradient(transparent 53%, #d9efe2 53%);
+		    background: radial-gradient(transparent 53%, #c6eaf1 53%);
 		    border-radius: 100%;
 		}
 
@@ -71,7 +72,7 @@
 		    top: calc(50% - 5px);
 		    height: 11px;
 		    width: 90%;
-		    background: #d9efe2;
+		    background: #c6eaf1;
 		    transform: rotate(45deg);
 		}
 
