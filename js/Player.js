@@ -1,3 +1,40 @@
+
+let cloneInstance = (instance) => {
+
+	let data = Object.assign({}, instance.data);
+
+	Object.keys(data).forEach((key) => {
+		let val = data[key];
+
+		if(typeof val === 'object'){
+			if(val.constructor === Object)
+				data[key] = JSON.parse(JSON.stringify(val));
+
+			else if(val.constructor === Array)
+				data[key] = JSON.parse(JSON.stringify(val));
+
+			else
+				data[key] = cloneInstance(val);
+		}
+	});
+
+	data = Object.assign({}, data);
+	return new instance.constructor(data);
+}
+
+Array.prototype.shuffle = function() {
+	let a = this.slice(0);
+    for (let i = a.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [a[i], a[j]] = [a[j], a[i]];
+    }
+    return a;
+}
+
+
+
+
+
 class Player {
 
 	constructor(data) {
@@ -31,34 +68,10 @@ class Player {
 			storage = {};
 
 
-		let clone = (instance) => {
-
-			let data = Object.assign({}, instance.data);
-
-			Object.keys(data).forEach((key) => {
-				let val = data[key];
-
-				if(typeof val === 'object'){
-					if(val.constructor === Object)
-						data[key] = JSON.parse(JSON.stringify(val));
-
-					else if(val.constructor === Array)
-						data[key] = JSON.parse(JSON.stringify(val));
-
-					else
-						data[key] = clone(val);
-				}
-			});
-
-			data = Object.assign({}, data);
-			return new instance.constructor(data);
-		}
-
-
 		let movesToWin = (player, move, i = 0) => {
 
 			// clone
-			player = clone(player);
+			player = cloneInstance(player);
 			let game = player.data.game;
 
 			// lookup past moves
@@ -72,9 +85,8 @@ class Player {
 			if(i > game.data.toWin)
 				return Infinity;
 
-			if([1,3].includes(move[0]) && [1,3].includes(move[1]))
+			if(i == 0 && [1,3].includes(move[0]) && [1,3].includes(move[1]))
 				i = i - 0.1;
-
 
 			if(!game.winner() && avalable.length > 0){
 				let bestMove = avalable.map((move) => {
@@ -83,13 +95,11 @@ class Player {
 
 				// prefer moves that setup
 				// two win posible wins
-
 				if(bestMove[0] <= i+1 && bestMove[1] <= i+1)
 					bestMove = bestMove[0]-0.2;
 
 				// else return as normal
-				else
-					bestMove = bestMove[0];
+				else bestMove = bestMove[0];
 
 				storage[game.data.grid.join(',')] = bestMove;
 				return bestMove;
@@ -101,25 +111,19 @@ class Player {
 		};
 
 
-		let shuffle = (a) => {
-		    for (let i = a.length - 1; i > 0; i--) {
-		        const j = Math.floor(Math.random() * (i + 1));
-		        [a[i], a[j]] = [a[j], a[i]];
-		    }
-		    return a;
-		}
-
-
-		let avalable = shuffle(this.avalableMoves()),
+		let avalable = this.avalableMoves().shuffle(),
 			winIn, move;
 
 
 		// CONTROL CENTER
 		let mid = [Math.round(game.data.size/2)][0],
 			midFree = avalable.map(move => move.join('-')).includes(`${mid}-${mid}`);
-		if(avalable.length+1 >= game.data.size**2 && midFree){
+		if(avalable.length+1 >= game.data.size**2){
 			winIn = Infinity;
-			move = [mid,mid];
+			if(midFree) move = [mid,mid];
+
+			// grap corner
+			else move = [[1,3].shuffle()[0],[1,3].shuffle()[0]];
 		}
 
 
@@ -130,20 +134,51 @@ class Player {
 				return movesToWin(this, move);
 			});
 			winIn = Math.min(...rate);
+			let opWinIn;
 
 			// FIGHT OPONENT
-			if(op) op = clone(op).strategy();
+			if(op) opWinIn = op.strategy().winIn;
 			
-			if(op && op.winIn < 0.9 && winIn > 0){
-				winIn++;
-				move = op.move;
+			// if opnent is one more
+			// away from winning, block!
+			if(op && opWinIn < winIn && opWinIn < 0.7){
+				move = op.strategy().move;
+				if(move.join(',') != avalable[rate.indexOf(winIn)].join(','))
+					winIn++;
 			}
 
-			else
-				move = avalable[rate.indexOf(winIn)];
+			// else find which move messes
+			// up oponent the most
+			else if(op && opWinIn < winIn){
+				let disrupt = [];
+
+				avalable.forEach((move) => {
+					let opClone = cloneInstance(op);
+					let game = opClone.data.game;
+					let self = cloneInstance(this);
+					self.data.game = game;
+					self.play(...move);
+					disrupt.push(opClone.strategy(self).winIn);
+				});
+
+
+				// check if one more distrupts
+				// oponent more then rest
+				let sort = disrupt.slice(0).sort();
+				if(sort[0] != sort.pop())
+					move = avalable[disrupt.indexOf(Math.max(...disrupt))];
+
+				// if disrupt moves doesnt matter
+				// default back to best move for player
+				else move = avalable[rate.indexOf(winIn)];
+
+				// aproximate new winIn;
+				winIn++;
+			}
+
+			// return best move for player
+			else move = avalable[rate.indexOf(winIn)];
 		}
-
-
 
 		return {
 			winIn: winIn,

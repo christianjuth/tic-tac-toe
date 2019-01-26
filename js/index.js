@@ -44,7 +44,7 @@ $(document).ready(() => {
 				counter = playerTwo.strategy(playerOne),
 				playerTwo.play(...counter.move);
 				render();
-			}, 200);
+			}, 150);
 		}
 	});
 });
